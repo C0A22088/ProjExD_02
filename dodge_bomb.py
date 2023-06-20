@@ -52,6 +52,19 @@ def main():
     # こうかとんSurface（kk_img）からこうかとんRect（kk_rct）を抽出する
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
+
+    bb_imgs = []
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_img.set_colorkey((0, 0, 0))
+        bb_imgs.append(bb_img)
+    x, y = random.randint(0, 1600), random.randint(0, 900)
+    bb_rct = bb_imgs[0].get_rect()
+    bb_rct.center = (x, y)
+    vx, vy = +1, +1
+    accs = [a for a in range(1, 11)]  # 加速度のリスト ｂ
+
     bd_img = pg.Surface((20, 20))  # 練習１
     bd_img.set_colorkey((0, 0, 0))  # 黒い部分を透明にする
     pg.draw.circle(bd_img, (255, 0, 0), (10, 10), 10)
@@ -77,7 +90,7 @@ def main():
             kk_img = kk_img_lose
             screen.blit(kk_img, kk_rct)
             pg.display.update()
-            time.sleep(3)
+            time.sleep(2)
             return
         
         key_lst = pg.key.get_pressed()
@@ -96,9 +109,10 @@ def main():
         kk_1 = 0
         for k, mv in delta.items():
             if key_lst[k]:
-                kk_rct.move_ip(mv)
+                
                 kk_0 = kk_0 + mv[0]
                 kk_1 = kk_1 + mv[1]
+        
         if kk_0 != 0 or kk_1 != 0:  # 飛ぶ方向に従ってこうかとん画像を切り替える
             kk_img = kk_imgs[kk_0, kk_1]
         screen.blit(kk_img, kk_rct)
@@ -109,6 +123,7 @@ def main():
         screen.blit(kk_img, kk_rct)
         bd_rct.move_ip(vx, vy)  # 練習２
         yoko, tate = check_bound(bd_rct)
+
         if not yoko:  # 横方向に画面外だったら
             vx *= -1
         if not tate:  # 縦方向に範囲外だったら
@@ -117,7 +132,7 @@ def main():
         pg.display.update()
         tmr += 1
         clock.tick(50)
-
+        
 
 if __name__ == "__main__":
     pg.init()
