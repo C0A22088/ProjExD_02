@@ -32,6 +32,21 @@ def main():
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+    kk_img_load = pg.image.load("ex02/fig/3.png")
+    kk_img_1 = pg.transform.rotozoom(kk_img_load, 0, 2.0)  # こうかとんのベース画像
+    kk_img_2 = pg.transform.flip(kk_img_1, True, False)  # rotozoomするためのflipしたこうかとんの画像
+    # こうかとんの画像方向の辞書
+    kk_imgs = {
+        (+5, 0): kk_img_2,  # 右方向こうかとんの画像
+        (+5, -5): pg.transform.rotozoom(kk_img_2, 45, 1.0),  # 右上方向こうかとんの画像
+        (0, -5): pg.transform.rotozoom(kk_img_2, 90, 1.0),  # 上方向こうかとんの画像
+        (-5, -5): pg.transform.rotozoom(kk_img_1, -45, 1.0),  # 左上方向こうかとんの画像
+        (-5, 0): kk_img_1,  # 左方向こうかとんの画像
+        (-5, +5): pg.transform.rotozoom(kk_img_1, 45, 1.0),  # 左下方向こうかとんの画像
+        (0, +5): pg.transform.rotozoom(kk_img_2, -90, 1.0),  # 下方向こうかとんの画像
+        (+5, +5): pg.transform.rotozoom(kk_img_2, -45, 1.0),  # 右下方向こうかとんの画像
+        }
+    kk_img = kk_imgs[+5, 0]
     # こうかとんSurface（kk_img）からこうかとんRect（kk_rct）を抽出する
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
@@ -66,6 +81,21 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
+
+        key_lst = pg.key.get_pressed()
+        # こうかとんの画像方向を選ぶための変数
+        kk_0 = 0
+        kk_1 = 0
+        for k, mv in delta.items():
+            if key_lst[k]:
+                kk_rct.move_ip(mv)
+                kk_0 = kk_0 + mv[0]
+                kk_1 = kk_1 + mv[1]
+        if kk_0 != 0 or kk_1 != 0:  # 飛ぶ方向に従ってこうかとん画像を切り替える
+            kk_img = kk_imgs[kk_0, kk_1]
+        screen.blit(kk_img, kk_rct)
+
+  
  
         screen.blit(bg_img, [0, 0])
         screen.blit(kk_img, kk_rct)
